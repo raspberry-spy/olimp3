@@ -10,36 +10,39 @@ def prog1():
     print(tello.get_battery())
     print(tello.get_temperature())
 
-    tello.send_command_without_return(command='streamoff')
+    tello.send_command_without_return('streamoff')
     tello.streamon()
     frame_read = tello.get_frame_read()
+    height, width, _ = frame_read.frame.shape
+    video = cv2.VideoWriter('video.avi', cv2.VideoWriter_fourcc(*'XVID'), 30, (width, height))
 
-    tello.takeoff()
     print("sus")
     while True:
-        tello.send_keepalive()
         img = cv2.cvtColor(frame_read.frame, cv2.COLOR_RGB2BGR)
+        video.write(img)
         cv2.imshow("drone", img)
         key = cv2.waitKey(1) & 0xff
-        if key == 27:  # ESC
+        if key == 27:
+            video.release()
             break
+        elif key == 13:
+            threading.Thread(target=tello.send_command_without_return, args=['land']).start()
+        elif key == 32:
+            threading.Thread(target=tello.send_command_without_return, args=['takeoff']).start()
         elif key == ord('w'):
-            threading.Thread(target=tello.move_forward, args=[50]).start()
+            threading.Thread(target=tello.send_command_without_return, args=['forward 50']).start()
         elif key == ord('s'):
-            threading.Thread(target=tello.move_back, args=[50]).start()
+            threading.Thread(target=tello.send_command_without_return, args=['back 50']).start()
         elif key == ord('a'):
-            threading.Thread(target=tello.move_left, args=[50]).start()
+            threading.Thread(target=tello.send_command_without_return, args=['left 50']).start()
         elif key == ord('d'):
-            threading.Thread(target=tello.move_right, args=[50]).start()
+            threading.Thread(target=tello.send_command_without_return, args=['right 50']).start()
         elif key == ord('e'):
-            threading.Thread(target=tello.rotate_clockwise, args=[30]).start()
+            threading.Thread(target=tello.send_command_without_return, args=['cw 30']).start()
         elif key == ord('q'):
-            threading.Thread(target=tello.rotate_counter_clockwise, args=[30]).start()
-        elif key == ord('r'):
-            threading.Thread(target=tello.move_up, args=[50]).start()
+            threading.Thread(target=tello.send_command_without_return, args=['ccw 30']).start()
         elif key == ord('f'):
-            threading.Thread(target=tello.move_down, args=[50]).start()
-    tello.land()
+            cv2.imwrite('image.png', img)
 
 # ---- ИНТЕРФЕЙС_ПРОВЕРКИ_ЗАДАНИЙ ----
 while True:
