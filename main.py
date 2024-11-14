@@ -21,11 +21,12 @@ tello.connect()
 print(tello.get_battery())
 print(tello.get_temperature())
 
+input()
+
 tello.streamon()
 frame_read = tello.get_frame_read()
 
 tello.takeoff()
-
 print("sus")
 while True:
     img = cv2.cvtColor(frame_read.frame, cv2.COLOR_RGB2BGR)
@@ -34,20 +35,20 @@ while True:
     if key == 27:  # ESC
         break
     elif key == ord('w'):
-        tello.move_forward(50)
+        threading.Thread(target=tello.move_forward, args=[50]).start()
     elif key == ord('s'):
-        tello.move_back(50)
+        threading.Thread(target=tello.move_back, args=[50]).start()
     elif key == ord('a'):
-        tello.move_left(50)
+        threading.Thread(target=tello.move_left, args=[50]).start()
     elif key == ord('d'):
-        tello.move_right(50)
+        threading.Thread(target=tello.move_right, args=[50]).start()
     elif key == ord('e'):
-        tello.rotate_clockwise(30)
+        threading.Thread(target=tello.rotate_clockwise, args=[30]).start()
     elif key == ord('q'):
-        tello.rotate_counter_clockwise(30)
+        threading.Thread(target=tello.rotate_counter_clockwise, args=[30]).start()
     elif key == ord('r'):
-        tello.move_up(50)
+        threading.Thread(target=tello.move_up, args=[50]).start()
     elif key == ord('f'):
-        tello.move_down(50)
+        threading.Thread(target=tello.move_down, args=[50]).start()
 
 tello.land()
