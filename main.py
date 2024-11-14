@@ -10,14 +10,14 @@ def prog1():
     print(tello.get_battery())
     print(tello.get_temperature())
 
-    input()
-
+    tello.send_command_without_return(command='streamoff')
     tello.streamon()
     frame_read = tello.get_frame_read()
 
     tello.takeoff()
     print("sus")
     while True:
+        tello.send_keepalive()
         img = cv2.cvtColor(frame_read.frame, cv2.COLOR_RGB2BGR)
         cv2.imshow("drone", img)
         key = cv2.waitKey(1) & 0xff
