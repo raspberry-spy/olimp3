@@ -1,5 +1,4 @@
-import cv2
-import numpy as np
+import cv2, time
 
 def prog1():
     from djitellopy import Tello
@@ -16,13 +15,14 @@ def prog1():
     height, width, _ = frame_read.frame.shape
     video = cv2.VideoWriter('video.avi', cv2.VideoWriter_fourcc(*'XVID'), 30, (width, height))
 
-    print("sus")
     while True:
-        img = cv2.cvtColor(frame_read.frame, cv2.COLOR_RGB2BGR)
-        video.write(img)
+        rgb = frame_read.frame
+        img = cv2.cvtColor(rgb, cv2.COLOR_RGB2BGR)
+        video.write(rgb)
         cv2.imshow("drone", img)
         key = cv2.waitKey(1) & 0xff
         if key == 27:
+            cv2.destroyAllWindows()
             video.release()
             break
         elif key == 13:
@@ -41,6 +41,12 @@ def prog1():
             threading.Thread(target=tello.send_command_without_return, args=['cw 30']).start()
         elif key == ord('q'):
             threading.Thread(target=tello.send_command_without_return, args=['ccw 30']).start()
+        elif key == ord('z'):
+            threading.Thread(target=tello.send_command_without_return, args=['rc 0 100 0 0']).start()
+        elif key == ord('x'):
+            threading.Thread(target=tello.send_command_without_return, args=['stop']).start()
+        elif key == ord('c'):
+            threading.Thread(target=tello.send_command_without_return, args=['emergency']).start()
         elif key == ord('f'):
             cv2.imwrite('image.png', img)
 
