@@ -26,19 +26,11 @@ frame_read = tello.get_frame_read()
 
 tello.takeoff()
 
-def movin():
-    while True:
-        img = cv2.cvtColor(frame_read.frame, cv2.COLOR_RGB2BGR)
-        cv2.imshow("drone", img)
-        key = cv2.waitKey(1) & 0xff
-
-threading.Thread(target=movin).start()
-
 print("sus")
 while True:
-    # In reality you want to display frames in a seperate thread. Otherwise
-    #  they will freeze while the drone moves.
-    # 在实际开发里请在另一个线程中显示摄像头画面，否则画面会在无人机移动时静
+    img = cv2.cvtColor(frame_read.frame, cv2.COLOR_RGB2BGR)
+    cv2.imshow("drone", img)
+    key = cv2.waitKey(1) & 0xff
     if key == 27:  # ESC
         break
     elif key == ord('w'):
