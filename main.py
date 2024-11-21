@@ -3,6 +3,7 @@ def prog1():
     from djitellopy import Tello
     import threading
     tello = Tello()
+    event = threading.Event()
     tello.connect()
 
     print(tello.get_battery())
@@ -13,31 +14,43 @@ def prog1():
     height, width, _ = frame_read.frame.shape
     video = cv2.VideoWriter('video.avi', cv2.VideoWriter_fourcc(*'XVID'), 30, (width, height))
 
+    def keycheck():
+        while(True):
+            event.wait()
+            if key == 13:
+                tello.land()
+            elif key == 32:
+                tello.takeoff()
+            elif key == ord('w'):
+                tello.move_forward(50)
+            elif key == ord('s'):
+                tello.move_back(50)
+            elif key == ord('a'):
+                tello.move_left(50)
+            elif key == ord('d'):
+                tello.move_right(50)
+            elif key == ord('e'):
+                tello.rotate_clockwise(30)
+            elif key == ord('q'):
+                tello.rotate_counter_clockwise(30)
+            time.sleep(0.6)
+            event.clear()
+
+    threading.Thread(target=keycheck).start()
+
     while True:
         img = frame_read.frame
         video.write(img)
         cv2.imshow("drone", img)
-        key = cv2.waitKey(33) & 0xff
+        key = cv2.waitKey(25) & 0xff
         if key == 27:
             break
-        elif key == 13:
-            threading.Thread(target=tello.send_command_without_return, args=['land']).start()
-        elif key == 32:
-            threading.Thread(target=tello.send_command_without_return, args=['takeoff']).start()
-        elif key == ord('w'):
-            threading.Thread(target=tello.send_command_without_return, args=['forward 50']).start()
-        elif key == ord('s'):
-            threading.Thread(target=tello.send_command_without_return, args=['back 50']).start()
-        elif key == ord('a'):
-            threading.Thread(target=tello.send_command_without_return, args=['left 50']).start()
-        elif key == ord('d'):
-            threading.Thread(target=tello.send_command_without_return, args=['right 50']).start()
-        elif key == ord('e'):
-            threading.Thread(target=tello.send_command_without_return, args=['cw 30']).start()
-        elif key == ord('q'):
-            threading.Thread(target=tello.send_command_without_return, args=['ccw 30']).start()
         elif key == ord('f'):
             cv2.imwrite('image.png', img)
+        elif key == 255:
+            pass
+        else:
+            event.set()
     cv2.destroyAllWindows()
     video.release()
     tello.streamoff()
