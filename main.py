@@ -1,5 +1,4 @@
 import cv2, time
-
 def prog1():
     from djitellopy import Tello
     import threading
@@ -9,21 +8,17 @@ def prog1():
     print(tello.get_battery())
     print(tello.get_temperature())
 
-    tello.send_command_without_return('streamoff')
     tello.streamon()
     frame_read = tello.get_frame_read()
     height, width, _ = frame_read.frame.shape
     video = cv2.VideoWriter('video.avi', cv2.VideoWriter_fourcc(*'XVID'), 30, (width, height))
 
     while True:
-        rgb = frame_read.frame
-        img = cv2.cvtColor(rgb, cv2.COLOR_RGB2BGR)
-        video.write(rgb)
+        img = frame_read.frame
+        video.write(img)
         cv2.imshow("drone", img)
-        key = cv2.waitKey(1) & 0xff
+        key = cv2.waitKey(33) & 0xff
         if key == 27:
-            cv2.destroyAllWindows()
-            video.release()
             break
         elif key == 13:
             threading.Thread(target=tello.send_command_without_return, args=['land']).start()
@@ -41,14 +36,12 @@ def prog1():
             threading.Thread(target=tello.send_command_without_return, args=['cw 30']).start()
         elif key == ord('q'):
             threading.Thread(target=tello.send_command_without_return, args=['ccw 30']).start()
-        elif key == ord('z'):
-            threading.Thread(target=tello.send_command_without_return, args=['rc 0 100 0 0']).start()
-        elif key == ord('x'):
-            threading.Thread(target=tello.send_command_without_return, args=['stop']).start()
-        elif key == ord('c'):
-            threading.Thread(target=tello.send_command_without_return, args=['emergency']).start()
         elif key == ord('f'):
             cv2.imwrite('image.png', img)
+    cv2.destroyAllWindows()
+    video.release()
+    tello.streamoff()
+    tello.end()
 
 # ---- ИНТЕРФЕЙС_ПРОВЕРКИ_ЗАДАНИЙ ----
 while True:
