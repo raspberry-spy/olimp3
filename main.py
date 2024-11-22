@@ -1,7 +1,7 @@
-import cv2, time
+import cv2
 def prog1():
     from djitellopy import Tello
-    import threading
+    import threading, time
     tello = Tello()
     event = threading.Event()
     tello.connect()
@@ -18,7 +18,9 @@ def prog1():
         while(True):
             event.clear()
             event.wait()
-            if key == 13:
+            if key == 27:
+                break
+            elif key == 13:
                 tello.land()
             elif key == 32:
                 tello.takeoff()
@@ -42,8 +44,9 @@ def prog1():
         img = frame_read.frame
         video.write(img)
         cv2.imshow("drone", img)
-        key = cv2.waitKey(25) & 0xff
+        key = cv2.waitKey(20) & 0xff
         if key == 27:
+            event.set()
             break
         elif key == ord('f'):
             cv2.imwrite('image.png', img)
@@ -55,6 +58,9 @@ def prog1():
     video.release()
     tello.streamoff()
     tello.end()
+
+def prog2():
+
 
 # ---- ИНТЕРФЕЙС_ПРОВЕРКИ_ЗАДАНИЙ ----
 while True:
