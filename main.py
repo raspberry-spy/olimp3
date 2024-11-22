@@ -16,6 +16,7 @@ def prog1():
 
     def keycheck():
         while(True):
+            event.clear()
             event.wait()
             if key == 13:
                 tello.land()
@@ -34,7 +35,6 @@ def prog1():
             elif key == ord('q'):
                 tello.rotate_counter_clockwise(30)
             time.sleep(0.6)
-            event.clear()
 
     threading.Thread(target=keycheck).start()
 
