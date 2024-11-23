@@ -12,7 +12,7 @@ def prog1():
     tello.streamon()
     frame_read = tello.get_frame_read()
     height, width, _ = frame_read.frame.shape
-    video = cv2.VideoWriter('video.avi', cv2.VideoWriter_fourcc(*'XVID'), 30, (width, height))
+    video = cv2.VideoWriter('video_out.avi', cv2.VideoWriter_fourcc(*'XVID'), 30, (width, height))
 
     def keycheck():
         while(True):
@@ -49,7 +49,7 @@ def prog1():
             event.set()
             break
         elif key == ord('f'):
-            cv2.imwrite('image.png', img)
+            cv2.imwrite('image_out.png', img)
         elif key == 255:
             pass
         else:
@@ -60,7 +60,17 @@ def prog1():
     tello.end()
 
 def prog2():
+    from ultralytics import YOLO
 
+    # Load a pretrained YOLO11n model
+    model = YOLO("yolo11n.pt")
+
+    # Define path to video file
+    source = "video_in.mp4"
+
+    # Run inference on the source
+    results = model(source, stream=True)  # generator of Results objects
+    print(results.boxes)
 
 # ---- ИНТЕРФЕЙС_ПРОВЕРКИ_ЗАДАНИЙ ----
 while True:
