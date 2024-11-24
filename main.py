@@ -44,7 +44,7 @@ def prog1():
         img = frame_read.frame
         video.write(img)
         cv2.imshow("drone", img)
-        key = cv2.waitKey(20) & 0xff
+        key = cv2.waitKey(25) & 0xff
         if key == 27:
             event.set()
             break
@@ -61,16 +61,20 @@ def prog1():
 
 def prog2():
     from ultralytics import YOLO
-
-    # Load a pretrained YOLO11n model
+    cap = cv2.VideoCapture("video_in.avi")
     model = YOLO("yolo11n.pt")
-
-    # Define path to video file
-    source = "video_in.mp4"
-
-    # Run inference on the source
-    results = model(source, stream=True)  # generator of Results objects
-    print(results.boxes)
+    results = model('video_in.avi', stream=True)
+    for r in results:
+        ret, frame = cap.read()
+        for box in r.boxes:
+            if box.conf[0] > 0.4:
+                [x1, y1, x2, y2] = box.xyxy[0]
+                x1, y1, x2, y2 = int(x1), int(y1), int(x2), int(y2)
+                cv2.rectangle(frame, (x1, y1), (x2, y2), (0, 0, 255), 2)
+        cv2.imshow('frame', frame)
+        cv2.waitKey(1)
+    cap.release()
+    cv2.destroyAllWindows()
 
 # ---- ИНТЕРФЕЙС_ПРОВЕРКИ_ЗАДАНИЙ ----
 while True:
