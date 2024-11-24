@@ -1,4 +1,6 @@
 import cv2
+
+
 def prog1():
     from djitellopy import Tello
     import threading, time
@@ -15,7 +17,7 @@ def prog1():
     video = cv2.VideoWriter('video_out_1.avi', cv2.VideoWriter_fourcc(*'XVID'), 30, (width, height))
 
     def keycheck():
-        while(True):
+        while (True):
             event.clear()
             event.wait()
             if key == 27:
@@ -59,14 +61,18 @@ def prog1():
     tello.streamoff()
     tello.end()
 
+
 def prog2():
     from ultralytics import YOLO
     model = YOLO("roofs.pt")
     results = model('video_in_2.avi', stream=True)
     cap = cv2.VideoCapture("video_in_2.avi")
-    width = int(cap.get(3))
-    height = int(cap.get(4))
-    video = cv2.VideoWriter('video_out_2.avi', cv2.VideoWriter_fourcc(*'XVID'), 30, (width, height))
+    fps = int(cap.get(cv2.CAP_PROP_FPS))
+    width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
+    height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
+    w = width // 2
+    h = height // 2
+    video = cv2.VideoWriter('video_out_2.avi', cv2.VideoWriter_fourcc(*'XVID'), fps, (width, height))
     for r in results:
         ret, frame = cap.read()
         for box in r.boxes:
@@ -74,10 +80,14 @@ def prog2():
                 [x1, y1, x2, y2] = box.xyxy[0]
                 x1, y1, x2, y2 = int(x1), int(y1), int(x2), int(y2)
                 cv2.rectangle(frame, (x1, y1), (x2, y2), (0, 0, 255), 2)
+                xc = (x1 + x2) // 2
+                yc = (y1 + y2) // 2
+                cv2.putText(frame, f'{xc - w} {yc - h}', (x1, yc), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 0, 255), 1)
         video.write(frame)
     video.release()
     cap.release()
     cv2.destroyAllWindows()
+
 
 # ---- ИНТЕРФЕЙС_ПРОВЕРКИ_ЗАДАНИЙ ----
 while True:
