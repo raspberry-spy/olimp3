@@ -111,7 +111,7 @@ def prog3():
     while True:
         frame = frame_read.frame
 
-        template = cv2.imread('mario_coin.png')
+        template = cv2.imread('drone.png')
         w, h = template.shape[:-1]
 
         res = cv2.matchTemplate(frame, template, cv2.TM_CCOEFF_NORMED)
