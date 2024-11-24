@@ -12,7 +12,7 @@ def prog1():
     tello.streamon()
     frame_read = tello.get_frame_read()
     height, width, _ = frame_read.frame.shape
-    video = cv2.VideoWriter('video_out.avi', cv2.VideoWriter_fourcc(*'XVID'), 30, (width, height))
+    video = cv2.VideoWriter('video_out_1.avi', cv2.VideoWriter_fourcc(*'XVID'), 30, (width, height))
 
     def keycheck():
         while(True):
@@ -41,15 +41,15 @@ def prog1():
     threading.Thread(target=keycheck).start()
 
     while True:
-        img = frame_read.frame
-        video.write(img)
-        cv2.imshow("drone", img)
+        frame = frame_read.frame
+        video.write(frame)
+        cv2.imshow("drone", frame)
         key = cv2.waitKey(25) & 0xff
         if key == 27:
             event.set()
             break
         elif key == ord('f'):
-            cv2.imwrite('image_out.png', img)
+            cv2.imwrite('image_out_1.png', frame)
         elif key == 255:
             pass
         else:
@@ -61,9 +61,12 @@ def prog1():
 
 def prog2():
     from ultralytics import YOLO
-    cap = cv2.VideoCapture("video_in.avi")
-    model = YOLO("yolo11n.pt")
-    results = model('video_in.avi', stream=True)
+    model = YOLO("roofs.pt")
+    results = model('video_in_2.avi', stream=True)
+    cap = cv2.VideoCapture("video_in_2.avi")
+    width = int(cap.get(3))
+    height = int(cap.get(4))
+    video = cv2.VideoWriter('video_out_2.avi', cv2.VideoWriter_fourcc(*'XVID'), 30, (width, height))
     for r in results:
         ret, frame = cap.read()
         for box in r.boxes:
@@ -71,8 +74,8 @@ def prog2():
                 [x1, y1, x2, y2] = box.xyxy[0]
                 x1, y1, x2, y2 = int(x1), int(y1), int(x2), int(y2)
                 cv2.rectangle(frame, (x1, y1), (x2, y2), (0, 0, 255), 2)
-        cv2.imshow('frame', frame)
-        cv2.waitKey(1)
+        video.write(frame)
+    video.release()
     cap.release()
     cv2.destroyAllWindows()
 
