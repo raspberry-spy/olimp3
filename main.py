@@ -75,7 +75,8 @@ def prog2():
     height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT)) # Получение данных о высоте кадра
     w = width // 2 # Координаты центра кадра по оси X
     h = height // 2 # Координаты центра кадра по оси Y
-    video = cv2.VideoWriter('video_out_2.avi', cv2.VideoWriter_fourcc(*'XVID'), fps, (width, height)) # Создание объекта для записи видео в файл video_out_2.avi
+    # Создание объекта для записи видео в файл video_out_2.avi
+    video = cv2.VideoWriter('video_out_2.avi', cv2.VideoWriter_fourcc(*'XVID'), fps, (width, height))
     for r in results: # Перебор результатов для каждого кадра
         ret, frame = cap.read() # Получения кадра с видео
         for box in r.boxes: # Перебор обводки каждого распознанного объекта
