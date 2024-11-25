@@ -12,11 +12,12 @@ def prog1():
     print(f'Заряд батареи: {tello.get_battery()}%')
     print(f'Температура: {tello.get_temperature()} ℃')
 
-    # Получение кадра
+    # Включение камеры дрона
     tello.streamon()
+    # Создание объекта чтения кадров
     frame_read = tello.get_frame_read()
+    # Получение данных о разрешении камеры
     height, width, _ = frame_read.frame.shape
-
     # Создание объекта для записи видео в файл video_out_1.avi
     video = cv2.VideoWriter('video_out_1.avi', cv2.VideoWriter_fourcc(*'XVID'), 30, (width, height))
 
@@ -48,73 +49,80 @@ def prog1():
     threading.Thread(target=keycheck).start()
 
     while True:
-        frame = frame_read.frame
-        video.write(frame)
+        frame = frame_read.frame # Получение кадра
+        video.write(frame) # Вывод видео с камеры
         cv2.imshow("drone", frame)
         key = cv2.waitKey(25) & 0xff
-        if key == 27:
+        if key == 27: # Для выхода из цикла
             event.set()
             break
-        elif key == ord('f'):
-            cv2.imwrite('image_out_1.png', frame)  # Сохранение скриншота клавишей F
+        elif key == ord('f'): # Сохранение скриншота клавишей F
+            cv2.imwrite('image_out_1.png', frame)
         elif key == 255:
             pass
         else:
             event.set()
-    cv2.destroyAllWindows()
-    video.release()
-    tello.streamoff()
-    tello.end()
+    cv2.destroyAllWindows() # Завершение с cv2
+    video.release() # Завершение записи
+    tello.streamoff() # Завершение видео потока с дрона
+    tello.end() # Завершение работы с дроном
 
 
 def prog2():
-    # Инициализация модели машинного обучения
     from ultralytics import YOLO
-    model = YOLO("roofs.pt")
-    results = model('video_in_2.avi', stream=True)
-    cap = cv2.VideoCapture("video_in_2.avi")
-    fps = int(cap.get(cv2.CAP_PROP_FPS))
-    width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
-    height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
+    model = YOLO("roofs.pt") # Инициализация модели машинного обучения
+    results = model('video_in_2.avi', stream=True) # Запись результатов работы модели
+    cap = cv2.VideoCapture("video_in_2.avi") # Создание объекта чтения из файла video_in_2.avi
+    fps = int(cap.get(cv2.CAP_PROP_FPS)) # Получение данных о количестве кадров в секунду
+    width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH)) # Получение данных о ширине
+    height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT)) # Получение данных о высоте
     w = width // 2
     h = height // 2
+    # Создание объекта для записи видео в файл video_out_2.avi
     video = cv2.VideoWriter('video_out_2.avi', cv2.VideoWriter_fourcc(*'XVID'), fps, (width, height))
-    for r in results:
-        ret, frame = cap.read()
-        for box in r.boxes:
-            if box.conf[0] > 0.4:
-                [x1, y1, x2, y2] = box.xyxy[0]
-                x1, y1, x2, y2 = int(x1), int(y1), int(x2), int(y2)
-                cv2.rectangle(frame, (x1, y1), (x2, y2), (0, 0, 255), 2)
-                xc = (x1 + x2) // 2
-                yc = (y1 + y2) // 2
+    for r in results: # Перебор результатов для каждого кадра
+        ret, frame = cap.read() # Получения кадра с видео
+        for box in r.boxes: # Перебор обводки каждого распознанного объекта
+            if box.conf[0] > 0.4: # Если значение совпадения больше 40%...
+                [x1, y1, x2, y2] = box.xyxy[0] # Получения координат обводки
+                x1, y1, x2, y2 = int(x1), int(y1), int(x2), int(y2) # Замена координат обводки на координаты
+                cv2.rectangle(frame, (x1, y1), (x2, y2), (0, 0, 255), 2) # Запись обводки на кадр с видео
+                xc = (x1 + x2) // 2 # Вычисление центра координат обводки по оси X
+                yc = (y1 + y2) // 2 # Вычисление центра координат обводки по оси Y
                 cv2.putText(frame, f'{xc - w} {yc - h}', (x1, yc), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 0, 255), 1)
-        video.write(frame)
-    video.release()
-    cap.release()
-    cv2.destroyAllWindows()
+        video.write(frame) # Запись кадра в видео
+    video.release() # Завершение записи
+    cap.release() # Завершение чтения
+    cv2.destroyAllWindows() # Завершение работы с cv2
 
 
 def prog3():
     from djitellopy import Tello
     import time, numpy as np
 
+
     lower1 = np.array([160, 100, 50])
     upper1 = np.array([180, 255, 255])
     lower2 = np.array([0, 100, 50])
     upper2 = np.array([15, 255, 255])
 
+    # Инициализация дрона
     tello = Tello()
     tello.connect()
 
     print(f'Заряд батареи: {tello.get_battery()}%')
     print(f'Температура: {tello.get_temperature()} ℃')
 
+    # Включение камеры дрона
     tello.streamon()
+    # Создание объекта чтения кадров
     frame_read = tello.get_frame_read()
+    # Получение данных о разрешении камеры
     height, width, _ = frame_read.frame.shape
+    # Создание объекта для записи видео в файл video_out_3.avi
     video = cv2.VideoWriter('video_out_3.avi', cv2.VideoWriter_fourcc(*'XVID'), 30, (width, height))
     while True:
+        # Получение кадра
         frame = frame_read.frame
 
         template = cv2.imread('drone.png')
@@ -123,7 +131,7 @@ def prog3():
         res = cv2.matchTemplate(frame, template, cv2.TM_CCOEFF_NORMED)
         threshold = .8
         loc = np.where(res >= threshold)
-        for pt in zip(*loc[::-1]):  # Switch columns and rows
+        for pt in zip(*loc[::-1]):
             cv2.rectangle(frame, pt, (pt[0] + w, pt[1] + h), (0, 0, 255), 2)
 
         video.write(frame)
