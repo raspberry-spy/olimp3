@@ -118,13 +118,14 @@ def prog3():
     video = cv2.VideoWriter('video_out_3.avi', cv2.VideoWriter_fourcc(*'XVID'), 30, (width, height))
     while True:
         frame = frame_read.frame
-
-        mask1 = cv2.inRange(frame, lower1, upper1)
-        mask2 = cv2.inRange(frame, lower2, upper2)
+        hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
+        mask1 = cv2.inRange(hsv, lower1, upper1)
+        mask2 = cv2.inRange(hsv, lower2, upper2)
         mask = cv2.add(mask1, mask2)
+        frame = cv2.bitwise_and(frame, frame, mask=mask)
 
-        video.write(mask)
-        cv2.imshow("drone", mask)
+        video.write(frame)
+        cv2.imshow("drone", frame)
         key = cv2.waitKey(25) & 0xff
         if key == 27:
             break
