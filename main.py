@@ -130,6 +130,7 @@ def prog3():
 
     cv2.destroyAllWindows()
     video.release()
+    frame_read.stop()
     tello.streamoff()
     tello.end()
 
