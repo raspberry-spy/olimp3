@@ -61,6 +61,7 @@ def prog1():
             event.set()
     cv2.destroyAllWindows() # Закрытие окна вывода видео
     video.release() # Завершение записи
+    frame_read.stop() # Завершение работы объекта чтения кадров
     tello.streamoff() # Завершение видео потока с дрона
     tello.end() # Завершение работы с дроном
 
