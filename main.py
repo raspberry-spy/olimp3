@@ -32,9 +32,9 @@ def prog1():
                 tello.move_forward(50)
             elif key == ord('s'):  # Движение назад на S
                 tello.move_back(50)
-            elif key == ord('a'):  # Поворот налево на A
+            elif key == ord('a'):  # Движение влево на A
                 tello.move_left(50)
-            elif key == ord('d'):  # Поворот направо на D
+            elif key == ord('d'):  # Движение вправо на D
                 tello.move_right(50)
             elif key == ord('e'):  # Поворот по часовой стрелке на 30 градусов клавишей E
                 tello.rotate_clockwise(30)
