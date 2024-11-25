@@ -15,7 +15,8 @@ def prog1():
     tello.streamon() # Включение камеры дрона
     frame_read = tello.get_frame_read() # Создание объекта чтения кадров
     height, width, _ = frame_read.frame.shape # Получение данных о разрешении камеры
-    video = cv2.VideoWriter('video_out_1.avi', cv2.VideoWriter_fourcc(*'XVID'), 30, (width, height)) # Создание объекта для записи видео в файл video_out_1.avi
+    # Создание объекта для записи видео в файл video_out_1.avi
+    video = cv2.VideoWriter('video_out_1.avi', cv2.VideoWriter_fourcc(*'XVID'), 30, (width, height))
 
     # Осуществление управления движением дрона через клавиатуру
     def keycheck():
