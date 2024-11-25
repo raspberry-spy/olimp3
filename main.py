@@ -100,39 +100,30 @@ def prog3():
     from djitellopy import Tello
     import time, numpy as np
 
-
     lower1 = np.array([160, 100, 50])
     upper1 = np.array([180, 255, 255])
     lower2 = np.array([0, 100, 50])
     upper2 = np.array([15, 255, 255])
 
-    tello = Tello() # Инициализация объекта дрона
-    tello.connect() # Подключение к дрону
+    tello = Tello()
+    tello.connect()
 
     print(f'Заряд батареи: {tello.get_battery()}%')
     print(f'Температура: {tello.get_temperature()} ℃')
 
-    tello.streamon() # Включение камеры дрона
-    frame_read = tello.get_frame_read() # Создание объекта чтения кадров
-    height, width, _ = frame_read.frame.shape # Получение данных о разрешении камеры
-
-    # Создание объекта для записи видео в файл video_out_3.avi
+    tello.streamon()
+    frame_read = tello.get_frame_read()
+    height, width, _ = frame_read.frame.shape
     video = cv2.VideoWriter('video_out_3.avi', cv2.VideoWriter_fourcc(*'XVID'), 30, (width, height))
-
     while True:
-        frame = frame_read.frame # Получение кадра
+        frame = frame_read.frame
 
-        template = cv2.imread('drone.png')
-        w, h = template.shape[:-1]
+        mask1 = cv2.inRange(frame, lower1, upper1)
+        mask2 = cv2.inRange(frame, lower2, upper2)
+        mask = cv2.add(mask1, mask2)
 
-        res = cv2.matchTemplate(frame, template, cv2.TM_CCOEFF_NORMED)
-        threshold = .8
-        loc = np.where(res >= threshold)
-        for pt in zip(*loc[::-1]):
-            cv2.rectangle(frame, pt, (pt[0] + w, pt[1] + h), (0, 0, 255), 2)
-
-        video.write(frame)
-        cv2.imshow("drone", frame)
+        video.write(mask)
+        cv2.imshow("drone", mask)
         key = cv2.waitKey(25) & 0xff
         if key == 27:
             break
