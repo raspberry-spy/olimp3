@@ -102,7 +102,7 @@ def prog3():
     import time, numpy as np
 
     lower1 = np.array([160, 100, 50])
-    upper1 = np.array([180, 255, 255])
+    upper1 = np.array([179, 255, 255])
     lower2 = np.array([0, 100, 50])
     upper2 = np.array([15, 255, 255])
 
@@ -116,9 +116,53 @@ def prog3():
     frame_read = tello.get_frame_read()
     height, width, _ = frame_read.frame.shape
     video = cv2.VideoWriter('video_out_3.avi', cv2.VideoWriter_fourcc(*'XVID'), 30, (width, height))
+
+    def nothing(x):
+        pass
+
+    cv2.namedWindow('drone')
+
+    cv2.createTrackbar('HMin1', 'drone', 0, 180, nothing)
+    cv2.createTrackbar('SMin1', 'drone', 0, 255, nothing)
+    cv2.createTrackbar('VMin1', 'drone', 0, 255, nothing)
+    cv2.createTrackbar('HMax1', 'drone', 0, 180, nothing)
+    cv2.createTrackbar('SMax1', 'drone', 0, 255, nothing)
+    cv2.createTrackbar('VMax1', 'drone', 0, 255, nothing)
+    cv2.createTrackbar('HMin2', 'drone', 0, 180, nothing)
+    cv2.createTrackbar('SMin2', 'drone', 0, 255, nothing)
+    cv2.createTrackbar('VMin2', 'drone', 0, 255, nothing)
+    cv2.createTrackbar('HMax2', 'drone', 0, 180, nothing)
+    cv2.createTrackbar('SMax2', 'drone', 0, 255, nothing)
+    cv2.createTrackbar('VMax2', 'drone', 0, 255, nothing)
+
     while True:
         frame = frame_read.frame
         hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
+
+        hMin1 = cv2.getTrackbarPos('HMin1', 'drone')
+        sMin1 = cv2.getTrackbarPos('SMin1', 'drone')
+        vMin1 = cv2.getTrackbarPos('VMin1', 'drone')
+
+        hMax1 = cv2.getTrackbarPos('HMax1', 'drone')
+        sMax1 = cv2.getTrackbarPos('SMax1', 'drone')
+        vMax1 = cv2.getTrackbarPos('VMax1', 'drone')
+
+        # Set minimum and max HSV values to display
+        lower1 = np.array([hMin1, sMin1, vMin1])
+        upper1 = np.array([hMax1, sMax1, vMax1])
+
+        hMin2 = cv2.getTrackbarPos('HMin2', 'drone')
+        sMin2 = cv2.getTrackbarPos('SMin2', 'drone')
+        vMin2 = cv2.getTrackbarPos('VMin2', 'drone')
+
+        hMax2 = cv2.getTrackbarPos('HMax2', 'drone')
+        sMax2 = cv2.getTrackbarPos('SMax2', 'drone')
+        vMax2 = cv2.getTrackbarPos('VMax2', 'drone')
+
+        # Set minimum and max HSV values to display
+        lower2 = np.array([hMin2, sMin2, vMin2])
+        upper2 = np.array([hMax2, sMax2, vMax2])
+
         mask1 = cv2.inRange(hsv, lower1, upper1)
         mask2 = cv2.inRange(hsv, lower2, upper2)
         mask = cv2.add(mask1, mask2)
