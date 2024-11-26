@@ -28,7 +28,7 @@ def prog1():
                 break
             elif key == 13:  # Посадка дрона на Enter
                 tello.land()
-            elif key == 32:  # Выключение дрона на Пробел
+            elif key == 32:  # Взлёт дрона на Пробел
                 tello.takeoff()
             elif key == ord('w'):  # Движение вперёд на W
                 tello.move_forward(50)
