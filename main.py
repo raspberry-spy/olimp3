@@ -119,6 +119,7 @@ def prog2():
     cap.release()  # Завершение чтения
     cv2.destroyAllWindows()  # Закрытие окна вывода видео
 
+
 # ---------- ЗАДАНИЕ_3 ----------
 #
 # Данная программа выполняет следующие действия:
@@ -132,27 +133,27 @@ def prog3():
     from djitellopy import Tello
     from ultralytics import YOLO
 
-    tello = Tello() # Инициализация дрона
-    tello.connect() # Подключение к дрону
+    tello = Tello()  # Инициализация дрона
+    tello.connect()  # Подключение к дрону
     tello.send_rc_control(0, 0, 0, 0)  # Остановка поворота дрона (если требуется)
 
     print(f'Заряд батареи: {tello.get_battery()}%')
     print(f'Температура: {tello.get_temperature()} ℃')
 
-    tello.streamon() # Включение камеры дрона
-    frame_read = tello.get_frame_read() # Создание объекта чтения кадров
-    height, width, _ = frame_read.frame.shape # Получение разрешения камеры
-    xc = width // 2 # Вычисление x координаты центра кадра
+    tello.streamon()  # Включение камеры дрона
+    frame_read = tello.get_frame_read()  # Создание объекта чтения кадров
+    height, width, _ = frame_read.frame.shape  # Получение разрешения камеры
+    xc = width // 2  # Вычисление x координаты центра кадра
     # Создание объекта для записи видео в файл video_out_1.avi
     video = cv2.VideoWriter('video_out_3.avi', cv2.VideoWriter_fourcc(*'XVID'), 15, (width, height))
 
-    model = YOLO('drones.pt') # Инициализация модели машинного обучения
+    model = YOLO('drones.pt')  # Инициализация модели машинного обучения
 
-    tello.takeoff() # Взлёт дрона
+    tello.takeoff()  # Взлёт дрона
 
     while True:
-        frame = frame_read.frame # Получение кадра
-        results = model(frame) # Запись результатов работы модели
+        frame = frame_read.frame  # Получение кадра
+        results = model(frame)  # Запись результатов работы модели
 
         for box in results[0].boxes:  # Перебор обводки каждого распознанного объекта
             if box.conf[0] > 0.6:  # Если значение совпадения больше 60%...
@@ -160,29 +161,29 @@ def prog3():
                 x1, y1, x2, y2 = int(x1), int(y1), int(x2), int(y2)  # Замена координат обводки на координаты
                 cv2.rectangle(frame, (x1, y1), (x2, y2), (0, 255, 0), 2)  # Запись обводки на кадр с видео
 
-        if len(results[0].boxes) > 0: # Выполнение условия при наличии распознанного объекта
+        if len(results[0].boxes) > 0:  # Выполнение условия при наличии распознанного объекта
             [x1, _, x2, _] = results[0].boxes[0].xyxy[0]  # Получения координат обводки
-            x1, x2 = int(x1), int(x2) # Перевод в тип integer
+            x1, x2 = int(x1), int(x2)  # Перевод в тип integer
 
             if x1 <= xc <= x2:  # Выполнение условия при соотношении координат по оси X как x1 <= xc <= x2
-                tello.send_rc_control(0, 0, 0, 0) # Остановка движения дрона
+                tello.send_rc_control(0, 0, 0, 0)  # Остановка движения дрона
             elif xc <= x1 <= x2:
-                tello.send_rc_control(0, 0, 0, 20) # Поворот дрона вправо
+                tello.send_rc_control(0, 0, 0, 20)  # Поворот дрона вправо
             elif x1 <= x2 <= xc:
-                tello.send_rc_control(0, 0, 0, -20) # Поворот дрона влево
-        video.write(frame) # Сохранение кадра с нанесённой обводкой
-        cv2.imshow("drone", frame) # Вывод видео с каиеры
+                tello.send_rc_control(0, 0, 0, -20)  # Поворот дрона влево
+        video.write(frame)  # Сохранение кадра с нанесённой обводкой
+        cv2.imshow("drone", frame)  # Вывод видео с каиеры
         key = cv2.waitKey(1) & 0xff
-        if key == 27: # Выход на Escape
+        if key == 27:  # Выход на Escape
             break
 
-    tello.send_rc_control(0, 0, 0, 0) # Остановка поворота дрона (если требуется)
-    tello.land() # Приземление дрона
-    cv2.destroyAllWindows() # Закрытие окна вывода видео
-    video.release()   # Завершение записи
-    frame_read.stop() # Завершение чтения кадров
-    tello.streamoff() # Завершение видео потока с дрона
-    tello.end() # Завершение работы с дроном
+    tello.send_rc_control(0, 0, 0, 0)  # Остановка поворота дрона (если требуется)
+    tello.land()  # Приземление дрона
+    cv2.destroyAllWindows()  # Закрытие окна вывода видео
+    video.release()  # Завершение записи
+    frame_read.stop()  # Завершение чтения кадров
+    tello.streamoff()  # Завершение видео потока с дрона
+    tello.end()  # Завершение работы с дроном
 
 
 # ---- ИНТЕРФЕЙС_ПРОВЕРКИ_ЗАДАНИЙ ----
