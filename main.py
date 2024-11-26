@@ -73,7 +73,7 @@ def prog1():
         elif key == ord('f'):  # Сохранение скриншота клавишей F
             cv2.imwrite('image_out_1.png', frame)
         elif key == 255:
-            tello.send_rc_control(0, 0, 0, 0) # Отправка пакета, чтобы дрон не сел спустя 15 секунд
+            pass
         else:
             event.set()
     cv2.destroyAllWindows()  # Закрытие окна вывода видео
