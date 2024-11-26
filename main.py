@@ -113,7 +113,7 @@ def prog3():
     frame_read = tello.get_frame_read()
     height, width, _ = frame_read.frame.shape
     xc = width // 2
-    video = cv2.VideoWriter('video_out_3.avi', cv2.VideoWriter_fourcc(*'XVID'), 30, (width, height))
+    video = cv2.VideoWriter('video_out_3.avi', cv2.VideoWriter_fourcc(*'XVID'), 15, (width, height))
 
     model = YOLO('drones.pt')
 
@@ -124,25 +124,25 @@ def prog3():
         results = model(frame)
 
         for box in results[0].boxes:  # Перебор обводки каждого распознанного объекта
-            if box.conf[0] > 0.4:  # Если значение совпадения больше 40%...
+            if box.conf[0] > 0.6:  # Если значение совпадения больше 40%...
                 [x1, y1, x2, y2] = box.xyxy[0]  # Получения координат обводки
                 x1, y1, x2, y2 = int(x1), int(y1), int(x2), int(y2)  # Замена координат обводки на координаты
                 cv2.rectangle(frame, (x1, y1), (x2, y2), (0, 255, 0), 2)  # Запись обводки на кадр с видео
 
         if len(results[0].boxes) > 0:
-            [x1, y1, x2, y2] = results[0].boxes[0].xyxy[0]  # Получения координат обводки
+            [x1, _, x2, _] = results[0].boxes[0].xyxy[0]  # Получения координат обводки
             x1, x2 = int(x1), int(x2)
 
-            if x1 < xc < x2:
+            if x1 <= xc <= x2:
                 tello.send_rc_control(0, 0, 0, 0)
-            elif xc < x1 < x2:
+            elif xc <= x1 <= x2:
                 tello.send_rc_control(0, 0, 0, 30)
-            elif x1 < x2 < xc:
+            elif x1 <= x2 <= xc:
                 tello.send_rc_control(0, 0, 0, -30)
 
         video.write(frame)
         cv2.imshow("drone", frame)
-        key = cv2.waitKey(25) & 0xff
+        key = cv2.waitKey(1) & 0xff
         if key == 27:
             break
 
