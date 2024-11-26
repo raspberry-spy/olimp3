@@ -116,6 +116,8 @@ def prog3():
 
     model = YOLO('drones.pt')
 
+    tello.takeoff()
+
     while True:
         frame = frame_read.frame
         results = model(frame)
@@ -143,6 +145,7 @@ def prog3():
         if key == 27:
             break
 
+    tello.land()
     cv2.destroyAllWindows()
     video.release()
     frame_read.stop()
